@@ -1,0 +1,15 @@
+This is a test
+
+modification not at the end of file.
+
+Delete a modification.
+
+make 1 more modification
+
+fix conflict between the github website and local laptop
+
+Some new modification.
+
+I think I shouldn't make modification outside of the conflict part. (delete "Try a new modification.")
+
+Fixed the conflict part, but also made modification outside of conflict part.
