@@ -21,19 +21,19 @@ function [options] = ini_options()
 % options.max_iter: maximum iteration number
 %%
 % Parameters for generating data
-    options.N = 200; %Number of data points 
-    options.l = 8;
+    options.N = 1000; %Number of data points 
+    options.l = 40;
     options.p = 2; %Dimension of variation sources
-    options.sigma_data = 10;
+    options.sigma_data = 30;
     options.sigma_nois = 0.0; %Standard Variation of noise
     
 % Parameters for running the algorithm    
-    options.sigma_alg = 0.25;
+    options.sigma_alg = 0.6;
     options.max_iter = 50;
     options.esp = 1e-4; %Tolerance for convergence
 
 % Parameters for storing and plotting data
-    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20160907-Implement-5-step-alg/figures/';
+    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20160930-Sparse-A-symm-constr-on-K/figures/';
     options.pct = 0.9999; %the percentage of threhold eigen-values
     options.pc1 = 1; %The index of the first component to be plotted
     options.pc2 = 2;
@@ -41,6 +41,9 @@ function [options] = ini_options()
     options.az = 30;
     options.el = 25;
     options.dd = 0.02;
-    options.psize = 30;
+    options.psize = 10;
+    
+% Parameters during optimization
+    options.delta = 1e-4;
         
 end

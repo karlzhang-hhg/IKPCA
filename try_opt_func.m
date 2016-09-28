@@ -51,6 +51,8 @@ l = options.l;
 n = (l+1)^2;
 X = generate_Gaussian_profile(Z*l,N,sigma_data,l);
 
+
+%========================================================================================
 %Plot PCA score to see if there is any nonlinear pattern in the generated
 %observed data
 pct = options.pct; %the percentage of threhold eigen-values

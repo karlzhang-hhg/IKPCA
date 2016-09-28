@@ -24,7 +24,7 @@ N = size(X,1);
 %of total variation.
 th_ind = sing_th_ind(diag(D),pct);
 
-PC_ind = (1:th_ind)
+PC_ind = (1:th_ind);
 eig_values = diag(D).^2;
 
 %Plot principle components with index pc1 and pc2 and pc3, according to the 
