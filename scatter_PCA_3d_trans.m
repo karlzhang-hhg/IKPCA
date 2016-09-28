@@ -1,4 +1,4 @@
-function [PC_ind,eig_values]=scatter_PCA_3d(X,pc1,pc2,pc3,pct,title_text,color_3D,psize,az,el)
+function [PC_ind,eig_values]=scatter_PCA_3d_trans(X,trans,pc1,pc2,pc3,pct,title_text,color_3D,psize,az,el)
 %Plot 3d scatter plot of principle components of X
 %Input:
 %X: The columns are different coordinates of data; and rows are samples of data
@@ -45,7 +45,8 @@ title_text = [title_text,' ',num2str(pc1),' , ',num2str(pc2),' and ',num2str(pc3
 figure();
 hold on;
 subplot(1,2,1);
-scatter_3d(PCA_score(:,[pc1,pc2,pc3]),title_text,color_3D,psize);
+PCA_score_trans = PCA_score + repmat(trans',N,1);
+scatter_3d(PCA_score_trans(:,[pc1,pc2,pc3]),title_text,color_3D,psize);
 xlabel(num2str(pc1));
 ylabel(num2str(pc2));
 zlabel(num2str(pc3));

@@ -43,7 +43,8 @@ function [options] = ini_options()
     options.dd = 0.02;
     options.psize = 10;
     
-% Parameters during optimization
+% Parameters during iteration in new model
     options.delta = 1e-4;
+    options.norm = 100;
         
 end

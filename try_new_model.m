@@ -63,35 +63,45 @@ rank_X_std = length(PC_std_ind);
 V = V(:,1:rank_X_std);
 
 %Initialization of the algorithm
-a = rand(1);
 q = length(PC_std_ind);
-trans_PC_X = PC_X - repmat(a,N,q);
+norm_PC_X = sqrt(sum(PC_X.^2,2));
+a = mean(diag(1./norm_PC_X)*PC_X,1)';
+a = a/norm(a);
+gamma = rand(1);
+trans_PC_X = PC_X + repmat(gamma*a',N,1);
+norm_PC_X = sqrt(sum(trans_PC_X.^2,2));
+scal = max(norm_PC_X)./norm_PC_X;
+trans_scal_PC_X = diag(scal)*trans_PC_X;
 k =0;
 l = 0;
+
+
+k = k+1;
+display(['k=',num2str(k),', ',num2str(gamma)]);
+norm_sq = sum(trans_scal_PC_X.^2,2); 
+b = sum(norm_sq)/sum(norm_sq.^2);
+est_K = trans_scal_PC_X*trans_scal_PC_X';
+l = 0;
+gamma_cur = gamma;
 while 1
-    k = k+1;
-    display(['k=',num2str(k),', ',num2str(a)]);
-    norm_sq = sum(trans_PC_X.^2,2); 
-    b = sum(norm_sq)/sum(norm_sq.^2);
-    est_K = trans_PC_X*trans_PC_X';
-    l = 0;
-    a_cur = a;
-    while 1
-        l = l+1;
-        min_est_K = min(min(est_K));
-        max_est_K = max(max(est_K));
-        if (min_est_K > 0)
-            break;
-        else
-            if (min_est_K <= 0)
-                [i_min,j_min] = find(est_K == min_est_K,1);
-                a_next = proj_a(PC_X,q,a_cur,b,i_min,j_min,1,options);
-                trans_PC_X = PC_X - repmat(a_next,N,q);
-                est_K = trans_PC_X*trans_PC_X';
-                if (l>10) 
-                    break;
-                end
+    l = l+1;
+    min_est_K = min(min(est_K));
+    max_est_K = max(max(est_K));
+    if (min_est_K > 0)
+        break;
+    else
+        if (min_est_K <= 0)
+            [i_min,j_min] = find(est_K == min_est_K,1);
+            gamma_next = proj_gamma(trans_scal_PC_X,a,b,i_min,j_min,1,options);
+            trans_PC_X = trans_scal_PC_X + repmat(gamma_next*a',N,1);
+            norm_PC_X = sqrt(sum(trans_PC_X.^2,2));
+            scal = max(norm_PC_X)./norm_PC_X;
+            trans_scal_PC_X = diag(scal)*trans_PC_X;
+            est_K = trans_scal_PC_X*trans_scal_PC_X';
+            if (l>10) 
+                break;
             end
+        end
 %             max_est_K = max(max(est_K));
 %             if (max_est_K > 1/b)
 %                 [i_max,j_max] = find(est_K == max_est_K,1);
@@ -99,22 +109,23 @@ while 1
 %                 trans_PC_X = PC_X - repmat(a_next,N,q);
 %                 est_K = trans_PC_X*trans_PC_X';
 %             end
-        end
-        a_cur = a_next;
-        display(['l=',num2str(l),', ',num2str(a_cur)]);
     end
-    if (abs(a_next-a)<options.esp)
-        display(abs(a_next-a));
-        a = a_next;
-        break;
-    else
-        a = a_next;
-    end
+    gamma_cur = gamma_next;
+    display(['l=',num2str(l),', ',num2str(gamma_cur)]);
 end
 
+    
+
+title_text3 = 'Translated version: Principle components of X';
+figure()
+scatter_3d(trans_scal_PC_X(:,[pc1,pc2,pc3]),title_text3,color_3D,psize);
+view(az,el);
 
 K_est= b*est_K;
 sigma_alg = options.sigma_alg;
 [Z_est,lambda_est] = IGaussian_Kernel(K_est,sigma_alg,p);
 title_text3 = ['Final estimated variation source based on data in feature space'];
 scatter_label2d(Z_est,title_text3,dd,tag,psize,color) %Plot scatter plot of Z
+
+% saveas(gca,[options.cwd,['3-1']],'jpg');
+% saveas(gca,[options.cwd,['2-1']],'fig');
