@@ -80,7 +80,7 @@ while 1
         l = l+1;
         min_est_K = min(min(est_K));
         max_est_K = max(max(est_K));
-        if (min_est_K > 0 && max_est_K <= 1/b)
+        if (min_est_K > 0)
             break;
         else
             if (min_est_K <= 0)
@@ -92,13 +92,13 @@ while 1
                     break;
                 end
             end
-            max_est_K = max(max(est_K));
-            if (max_est_K > 1/b)
-                [i_max,j_max] = find(est_K == max_est_K,1);
-                a_next = proj_a(PC_X,q,a_cur,b,i_max,j_max,2,options);
-                trans_PC_X = PC_X - repmat(a_next,N,q);
-                est_K = trans_PC_X*trans_PC_X';
-            end
+%             max_est_K = max(max(est_K));
+%             if (max_est_K > 1/b)
+%                 [i_max,j_max] = find(est_K == max_est_K,1);
+%                 a_next = proj_a(PC_X,q,a_cur,b,i_max,j_max,2,options);
+%                 trans_PC_X = PC_X - repmat(a_next,N,q);
+%                 est_K = trans_PC_X*trans_PC_X';
+%             end
         end
         a_cur = a_next;
         display(['l=',num2str(l),', ',num2str(a_cur)]);
@@ -113,4 +113,8 @@ while 1
 end
 
 
-
+K_est= b*est_K;
+sigma_alg = options.sigma_alg;
+[Z_est,lambda_est] = IGaussian_Kernel(K_est,sigma_alg,p);
+title_text3 = ['Final estimated variation source based on data in feature space'];
+scatter_label2d(Z_est,title_text3,dd,tag,psize,color) %Plot scatter plot of Z
