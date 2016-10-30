@@ -17,13 +17,13 @@ function [PC_ind,eig_values]=scatter_GK_PCA_3d(K,pc1,pc2,pc3,pct,title_text,colo
 N = size(K,1);
 %Singular Value Decomposition applied on kernel matrix which is equivalent
 %to apply eigen-value algorithm on the symmetric matrix K
-[V,D,U] = svd(K,'econ');
+[V,D,U] = svd(K/(N-1),'econ');
 %display(diag(D).^2);
 
 %Find threshold index of singular value for which the sum of the corresponding
 %eigenvalues, larger or equal to it, accounts for at least pct percentage
 %of total variation.
-th_ind = sing_th_ind(diag(D),pct);
+th_ind = sing_th_ind(diag(sqrt(D)),pct);
 
 PC_ind = (1:th_ind)
 eig_values = diag(D);

@@ -1,7 +1,9 @@
 %% Try optimization function to obtain variation sources Z 
-%Generate the observations of Gaussian profiles, X, using variation sources
-%Z. Then, use the basic model proposed by Prof. Apley to get the constant
-%matrix A. Starting with A and X, use optimization function of MATLAB to
+%1. Generate the observations of Gaussian profiles, X, using variation sources
+%Z. 
+%2. Then, use the basic model proposed by Prof. Apley to get the constant
+%matrix A. 
+%3. Starting with A and X, use optimization function of MATLAB to
 %find out the variation sources to see if it can return the correct
 %answers.
 

@@ -1,6 +1,6 @@
 %% Try Non-negative matrix factorization (nnmf()) in matlab to factorize the
 %% observation X matrix
-
+clear();
 % Initialize parameters
 options = ini_options();
 
@@ -83,7 +83,7 @@ X = generate_Gaussian_profile(Z*l,N,sigma_data,l);
 % %Set options for nnmf;
 % opt = statset('Maxiter',1000,'Display','iter');
 % 
-% 
+% W0 = rand(n,N);
 % [W,H] = nnmf(X',N,'w0',W0,'h0',PC_X*PC_X',...
 %     'options',opt,...
 %     'algorithm','als');
@@ -94,12 +94,18 @@ X = generate_Gaussian_profile(Z*l,N,sigma_data,l);
 
 
 %% Call nnmf() function on X;
-%% Random initialization
+% Random initialization
 W0 = rand(n,N);
 H0 = rand(N,N);
+opt = statset('Maxiter',1000,'Display','iter');
 [W,H] = nnmf(X',N,'w0',W0,'h0',H0,...
     'options',opt,...
     'algorithm','mult');
 % 'als' doesn't give me good result, but 'mult' works;
 
+K_est= H;
+sigma_alg = options.sigma_alg;
+[Z_est,lambda_est] = IGaussian_Kernel(K_est,sigma_alg,p);
+title_text3 = ['Final estimated variation source based on NMF (\sigma_{data}=',num2str(options.sigma_data),')'];
+scatter_label2d(Z_est,title_text3,dd,tag,psize,color) %Plot scatter plot of Z
 

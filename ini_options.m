@@ -28,13 +28,13 @@ function [options] = ini_options()
     options.sigma_nois = 0.0; %Standard Variation of noise
     
 % Parameters for running the algorithm    
-    options.sigma_alg = 0.6;
+    options.sigma_alg = 1;
     options.max_iter = 50;
     options.esp = 1e-4; %Tolerance for convergence
 
 % Parameters for storing and plotting data
-    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20160930-Sparse-A-symm-constr-on-K/figures/';
-    options.pct = 0.9999; %the percentage of threhold eigen-values
+    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20161007-Try-more-NMF-improve-new-model-alg/figures/';
+    options.pct = 0.99; %the percentage of threhold eigen-values
     options.pc1 = 1; %The index of the first component to be plotted
     options.pc2 = 2;
     options.pc3 = 3;
@@ -46,5 +46,11 @@ function [options] = ini_options()
 % Parameters during iteration in new model
     options.delta = 1e-4;
     options.norm = 100;
+    
+% Parameters of embedding data
+    options.k_neig = 3;
+    
+% Temporary parameters
+    options.a = 0;
         
 end

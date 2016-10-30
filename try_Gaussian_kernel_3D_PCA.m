@@ -21,6 +21,15 @@ title_text1 = 'Variation sources';
 tag = 0;
 scatter_label2d(Z,title_text1,dd,tag,psize,color) %Plot scatter plot of Z
 
+% Generated data set 2
+%Generate N Gaussian profile images (2-D) as high-dimensional observations
+%sigma_data: the sigma of those Gaussian profiles
+%l: the largest index of pixel in one side of images of those Gaussian
+sigma_data = options.sigma_data;
+l = options.l;
+n = (l+1)^2;
+X = generate_Gaussian_profile(Z*l,N,sigma_data,l);
+
 %Some parameters and color for 3D scatter plot
 pct = options.pct; %the percentage of threhold eigen-values
 pc1 = options.pc1; %The index of the first component to be plotted
@@ -48,6 +57,20 @@ title_text = ['PCA scores of feature vectors of variation sources Z (\sigma_{alg
 %PCA scores for uncentered feature vectors;
 title_text = ['Uncentered: PCA scores of feature vectors of variation sources Z (\sigma_{alg}=',num2str(sigma_alg),') '];
 [PC_ind,eig_values] = scatter_GK_PCA_3d(K_Z,pc1,pc2,pc3,pct,title_text,color_3D,psize,az,el);
+
+%Generate kernel matrix (Gaussian Kernel) for observations X
+sigma_alg = options.sigma_alg; 
+K_X = Gaussian_Kernel(X,sigma_alg);
+
+%Centering matrix;
+M_cent = eye(N)-1/N*ones(N);
+%PCA scores for centered feature vectors;
+title_text = ['PCA scores of feature vectors of observations X (\sigma_{alg}=',num2str(sigma_alg),') '];
+[PC_ind,eig_values] = scatter_GK_PCA_3d(M_cent*K_X*M_cent,pc1,pc2,pc3,pct,title_text,color_3D,psize,az,el);
+
+%PCA scores for uncentered feature vectors;
+title_text = ['Uncentered: PCA scores of feature vectors of observations X (\sigma_{alg}=',num2str(sigma_alg),') '];
+[PC_ind,eig_values] = scatter_GK_PCA_3d(K_X,pc1,pc2,pc3,pct,title_text,color_3D,psize,az,el);
 
 % saveas(gca,[options.cwd,['2-3']],'jpg');
 % saveas(gca,[options.cwd,['2-3']],'fig');
