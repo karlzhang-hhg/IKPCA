@@ -28,12 +28,12 @@ function [options] = ini_options()
     options.sigma_nois = 0.0; %Standard Variation of noise
     
 % Parameters for running the algorithm    
-    options.sigma_alg = 1;
+    options.sigma_alg = 3;
     options.max_iter = 50;
     options.esp = 1e-4; %Tolerance for convergence
 
 % Parameters for storing and plotting data
-    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20161007-Try-more-NMF-improve-new-model-alg/figures/';
+    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20161104-OLS-NMF-Try/figures/';
     options.pct = 0.99; %the percentage of threhold eigen-values
     options.pc1 = 1; %The index of the first component to be plotted
     options.pc2 = 2;

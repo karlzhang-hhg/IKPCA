@@ -1,5 +1,6 @@
-%% Try Non-negative matrix factorization (nnmf()) in matlab to factorize the
-%% observation X matrix
+%% Try Non-negative matrix factorization by writing function myself to factorize the
+%% observation X matrix. The method used is multiplicative update algorithm.
+%% The extra constraints is to make sure K (X = AK) is symmetric during update.
 clear();
 % Initialize parameters
 options = ini_options();
@@ -92,24 +93,18 @@ X = generate_Gaussian_profile(Z*l,N,sigma_data,l);
 % % Error using nnmf>checkmatrices (line 360)
 % % H must be a matrix of non-negative values
 
+%% Multiplicative update algorithm
+A0 = rand(n,N);
+K0 = rand(N,N);
+maxiter = 1000;
+tolx = 1e-4;
+tolfun= 1e-4;
+[A_est, K_est]=nmf_multi_symm(X',A0,K0,maxiter,tolx,tolfun);
 
-%% Call nnmf() function on X;
-% Random initialization
-W0 = rand(n,N);
-H0 = rand(N,N);
-opt = statset('Maxiter',1000,'Display','iter');
-[W,H] = nnmf(X',N,'w0',W0,'h0',H0,...
-    'options',opt,...
-    'algorithm','mult');
-% 'als' doesn't give me good result, but 'mult' works;
-% 'als' requires W'*W and H'*H to be invertible, which means k<n and k<m;
-% When (l+1)^2 is smaller than N, the matlab report error: 
-% "Error using nnmf (line 98)
-% K must be a positive integer no larger than the number of rows or columns
-% in A."
-
-K_est= H;
 sigma_alg = options.sigma_alg;
 [Z_est,lambda_est] = IGaussian_Kernel(K_est,sigma_alg,p);
-title_text3 = ['Final estimated variation source based on NMF (\sigma_{data}=',num2str(options.sigma_data),')'];
+title_text3 = ['Final estimated variation source based on NMF (\sigma_{data}=',num2str(options.sigma_data),') with symmetric K'];
 scatter_label2d(Z_est,title_text3,dd,tag,psize,color) %Plot scatter plot of Z
+% saveas(gca,[options.cwd,['6-1']],'jpg');
+% saveas(gca,[options.cwd,['6-1']],'fig');
+csvwrite([options.cwd,'K_est_symm_sigma_data_',num2str(sigma_data),'.csv'],K_est);
