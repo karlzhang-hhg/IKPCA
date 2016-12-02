@@ -89,15 +89,16 @@ PC_X = V*D(:,1:length(PC_std_ind));
 
 %Plot 2-D scattering plot of first two coordinates obtained by PCA
 title_text_PCA = 'Principle components of observations X';
-scatter_label2d_func(PC_X(:,[1,2]),title_text_PCA,dd,tag,psize,color)
+scatter_label2d_func(PC_X(:,[1,2])/diag(sqrt(var(PC_X(:,[1,2]))))*diag(sqrt(var(Z(:,[1,2])))),title_text_PCA,dd,tag,psize,color)
 % saveas(gca,[options.cwd,['2-3']],'jpg');
 % saveas(gca,[options.cwd,['2-3']],'fig');
 
 %% Estimate Variation Sources 
 % Given vector a, find true coefficient matrix A
 sigma_alg = options.sigma_alg;
-a = ones(n,1);
-K_true = Gaussian_Kernel(Z,sigma_alg);
+a = 0.1*ones(n,1);
+K_true = Gaussian_Kernel(PC_X(:,[1,2])/diag(sqrt(var(PC_X(:,[1,2]))))*diag(sqrt(var(Z(:,[1,2])))),sigma_alg);
+%K_PC_X = Gaussian_Kernel(PC_X,sigma_alg);
 B = X'-a*ones(1,N);
 
 % A_true = B/K_true;
@@ -105,7 +106,7 @@ B = X'-a*ones(1,N);
 % need to use regularized least-square
 
 % Regularized coefficients
-lambda = 10.^(-12:-1);
+lambda = 10.^(-12:2);
 
 % Error of estimation
 err = zeros(1,length(lambda));
@@ -118,32 +119,33 @@ err = zeros(1,length(lambda));
 % There still some round-off error among the first 10 lambda. Choose the
 % 11st lambda and use that to approximately calculate true coefficient
 % matrix A.
-loop_ind = [11,11;10,11;10,10;9,10;9,9];
+loop_ind = [14,14;13,13;12,12;11,11;10,11;10,10;9,10;9,9;8,8;7,7];
 
 for i = 1:size(loop_ind,1)
-ind1 = loop_ind(i,1);
-ind2 = loop_ind(i,2);
-    
-% [~,ind] = min(err);
-% lambda(ind)
-A_app = ((lambda(ind1)*eye(N)+K_true*K_true)\K_true*B')';
+    i
+    ind1 = loop_ind(i,1);
+    ind2 = loop_ind(i,2);
 
-% Regularized OLS without requiring symmetric K
-% for i = 1:length(lambda)
-%     K_MAP = (lambda(i)*eye(N)+A_app'*A_app)\A_app'*B;
-%     err(i) = sum(sum((B-A_app*K_true).^2))/n/N;
-% end
-% [~,ind] = min(err);
-% lambda(ind)
-K_est = (lambda(ind2)*eye(N)+A_app'*A_app)\A_app'*B;
+    % [~,ind] = min(err);
+    % lambda(ind)
+    A_app = ((lambda(ind1)*eye(N)+K_true*K_true)\K_true*B')';
 
-sigma_alg = options.sigma_alg;
-[Z_est,lambda_est] = IGaussian_Kernel(K_est,sigma_alg,p);
-title_text3 = ['Final estimated variation source based on regularized OLS (\sigma_{data}=',num2str(options.sigma_data),', \lambda_{A}=',num2str(lambda(ind1)),', \lambda_{K}=',num2str(lambda(ind2)),') with asymmetric K'];
-scatter_label2d(Z_est,title_text3,dd,tag,psize,color);
-saveas(gca,[options.cwd,['7-',num2str(i)]],'jpg');
-saveas(gca,[options.cwd,['7-',num2str(i)]],'fig');
-csvwrite([options.cwd,'K_est_OLS_asymm_sigma_data_',num2str(sigma_data),'-',num2str(i),'.csv'],K_est);
+    % Regularized OLS without requiring symmetric K
+    % for i = 1:length(lambda)
+    %     K_MAP = (lambda(i)*eye(N)+A_app'*A_app)\A_app'*B;
+    %     err(i) = sum(sum((B-A_app*K_true).^2))/n/N;
+    % end
+    % [~,ind] = min(err);
+    % lambda(ind)
+    K_est = (lambda(ind2)*eye(N)+A_app'*A_app)\A_app'*B;
+
+    sigma_alg = options.sigma_alg;
+    [Z_est,lambda_est] = IGaussian_Kernel(K_est,sigma_alg,p);
+    title_text3 = ['Final estimated variation source based on regularized OLS (\sigma_{data}=',num2str(options.sigma_data),', \lambda_{A}=',num2str(lambda(ind1)),', \lambda_{K}=',num2str(lambda(ind2)),') with asymmetric K'];
+    scatter_label2d(Z_est,title_text3,dd,tag,psize,color);
+    %saveas(gca,[options.cwd,['7-',num2str(i)]],'jpg');
+    %saveas(gca,[options.cwd,['7-',num2str(i)]],'fig');
+    %csvwrite([options.cwd,'K_est_OLS_asymm_sigma_data_',num2str(sigma_data),'-',num2str(i),'.csv'],K_est);
 
 end
 % for i = 10:1%length(lambda)

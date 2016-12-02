@@ -35,7 +35,7 @@ eig_values = diag(D).^2;
 %then there will be some nonlinear manifold inside the data
 %(2) If data are randomly scattering in all pairs of principle components,
 %then data are pretty linearly in those principle components.
-PCA_score = V*D*sqrt(N-1); %PCA score of data (need to multiply sqrt(N-1) if we want a reasonable coordinates corresponding to the variation represented by eigenvalues)
+PCA_score = V*D; %PCA score of data
 % display('The eigenvectors of covariance of X')
 % U(:,1)
 % norm(U(:,1))

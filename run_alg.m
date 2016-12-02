@@ -41,6 +41,9 @@ function run_alg(rngn, scatter_label2d_func, scat_func_tag, options)
         a = int16(Z(:,2)*100); b = num2str(a); c = cellstr(b); %Labels
         scatter_label2d_func(Z,title_text1,dd,tag,psize,color,c) %Plot scatter plot of Z
     end
+%         saveas(gca,[options.cwd,['0-original']],'jpg');
+%         saveas(gca,[options.cwd,['0-original']],'fig');
+%         close(gcf);
     % Generated data set 1
     % %Generate n-D embedded data at higher-dimensional space
     % n = 10; %Dimension of observed data
@@ -77,21 +80,28 @@ function run_alg(rngn, scatter_label2d_func, scat_func_tag, options)
     color_3D = [0.7*ones(N,1),Z(:,1)/max(Z(:,1)),Z(:,2)/max(Z(:,2))];
     %PCA on original observations
     [PC_ind,eig_values] = scatter_PCA_3d(X,pc1,pc2,pc3,pct,title_text2,color_3D,psize,az,el);
+%     saveas(gca,[options.cwd,['0-PCA']],'jpg');
+%     saveas(gca,[options.cwd,['0-PCA']],'fig');
+%     close(gcf);
     
     %Standardize each coordinates of X; in other words, for each column,
     %substract means and divide by unbiased standard deviation of that column
     std_X = std(X,0,1); 
     X_std = (X-repmat(mean(X,1),N,1))/diag(std_X);
-    %X_std = X;
+%     X_std = X;
     
     %PCA on standardized observations
     title_text3 = 'Standardized version: Principle components of';
     [PC_std_ind,eig_values_std] = scatter_PCA_3d(X_std,pc1,pc2,pc3,pct,title_text3,color_3D,psize,az,el);
+%     saveas(gca,[options.cwd,['0-PCA-std']],'jpg');
+%     saveas(gca,[options.cwd,['0-PCA-std']],'fig');
+%     close(gcf);
 
     %%Inverse KPCA
     %In svd (singular value decomposition, the singular values are sorted
     %in non-increasing order.
     [V,D,U] = svd(X_std/sqrt(N-1),'econ');
+    [V,D,U] = svd(X_std,'econ');
     %Principle components of X (PCA scores)
     PC_X = V*D(:,1:length(PC_std_ind));
     %The standardized observations doesn't have full column rank, so we
@@ -119,9 +129,9 @@ function run_alg(rngn, scatter_label2d_func, scat_func_tag, options)
         K_tilde = proj_mat*K_est*proj_mat; %non-negative definite
         K_tilde = (K_tilde+K_tilde')/2;
         %Inverse function of kernel
-        [Z_est_new,lambda_est_new] = IGaussian_Kernel(K_tilde,sigma_alg,p);
-        [Z_est_plot,lambda_est_plot] = IGaussian_Kernel(K_tilde,sigma_alg,4);
-        contour_Z(Z(:,1),Z(:,2),real(Z_est_plot),lambda_est_plot,color_3D,psize);
+        [Z_est_new,lambda_est_new] = IGaussian_Kernel_old(K_tilde,sigma_alg,p);
+        [Z_est_plot,lambda_est_plot] = IGaussian_Kernel_old(K_tilde,sigma_alg,4);
+%         contour_Z(Z(:,1),Z(:,2),real(Z_est_plot),lambda_est_plot,color_3D,psize);
         %Condition of stopping loop because of convergence of estimation of Z
         count = count + 1;
         if count > 1
@@ -131,14 +141,14 @@ function run_alg(rngn, scatter_label2d_func, scat_func_tag, options)
                 break;
             end
         end
-        saveas(gca,[options.cwd,['8-',num2str(count-1),'1']],'jpg');
-        saveas(gca,[options.cwd,['8-',num2str(count-1),'1']],'fig');
-        close(gcf);
+%         saveas(gca,[options.cwd,['8-',num2str(count-1),'1']],'jpg');
+%         saveas(gca,[options.cwd,['8-',num2str(count-1),'1']],'fig');
+%         close(gcf);
         Z_est = Z_est_new;
         %Plug in the initial Z to see effect
         if count == 1
-%             Z_est = PC_X;
-            Z_est = Z;
+            Z_est = PC_X;
+%             Z_est = Z;
         end
         
         %Update estimation of K based on new estimation of Z
@@ -151,8 +161,8 @@ function run_alg(rngn, scatter_label2d_func, scat_func_tag, options)
         elseif scat_func_tag == 2
             scatter_label2d_func(Z_est(:,1:p),title_text3,dd,tag,psize,color,c) %Plot scatter plot of estimation of Z
         end
-        saveas(gca,[options.cwd,['8-',num2str(count-1),'2']],'jpg');
-        saveas(gca,[options.cwd,['8-',num2str(count-1),'2']],'fig');
+        saveas(gca,[options.cwd,['5-',num2str(count-1)]],'jpg');
+        saveas(gca,[options.cwd,['5-',num2str(count-1)]],'fig');
         close(gcf);
         if count == options.max_iter
             break;
@@ -168,6 +178,8 @@ function run_alg(rngn, scatter_label2d_func, scat_func_tag, options)
     elseif scat_func_tag == 2
         scatter_label2d_func(Z_est,title_text3,dd,tag,psize,color,c) %Plot scatter plot of estimation of Z
     end
-    
+    saveas(gca,[options.cwd,['5-','Final']],'jpg');
+    saveas(gca,[options.cwd,['5-','Final']],'fig');
+    close(gcf);
     count
 end

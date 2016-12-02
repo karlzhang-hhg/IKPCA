@@ -26,15 +26,16 @@ function [options] = ini_options()
     options.p = 2; %Dimension of variation sources
     options.sigma_data = 30;
     options.sigma_nois = 0.0; %Standard Variation of noise
+    options.rngn = 2; %Seed for random generator
     
 % Parameters for running the algorithm    
-    options.sigma_alg = 3;
-    options.max_iter = 50;
-    options.esp = 1e-4; %Tolerance for convergence
+    options.sigma_alg = 1;
+    options.max_iter = 20;
+    options.esp = 1e-6; %Tolerance for convergence
 
 % Parameters for storing and plotting data
-    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20161104-OLS-NMF-Try/figures/';
-    options.pct = 0.99; %the percentage of threhold eigen-values
+    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20161202-Implement-old-model/figures/';
+    options.pct = 0.9999; %the percentage of threhold eigen-values
     options.pc1 = 1; %The index of the first component to be plotted
     options.pc2 = 2;
     options.pc3 = 3;
