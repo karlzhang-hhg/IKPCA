@@ -117,14 +117,20 @@ close(gcf);
 methods_name_list = {'PCA';'Isomap';'Laplacian';'HessianLLE';'LLE';'LDA';'MDS';'LandmarkIsomap';'LTSA';'KernelPCA';'tSNE';'LLTSA'};
 no_dims = round(intrinsic_dim(X, 'MLE'));
 for i = 1:length(methods_name_list)
+    display(methods_name_list{i});
+    tic;
     [mappedX, mapping] = compute_mapping(X, methods_name_list{i}, no_dims);
+    toc;
     figure, scatter(mappedX(:,1), mappedX(:,2), 5, color_3D); title(['Result of ', methods_name_list{i}]);
     saveas(gca,[options.cwd,methods_name_list{i}],'jpg');
     saveas(gca,[options.cwd,methods_name_list{i}],'fig');
     close(gcf);
 end
 for i = 1:length(methods_name_list)
+    display(methods_name_list{i});
+    tic;
     [mappedX, mapping] = compute_mapping(X_std, methods_name_list{i}, no_dims);
+    toc;
     figure, scatter(mappedX(:,1), mappedX(:,2), 5, color_3D); title(['Result of ', methods_name_list{i},' (standardized version)']);
     saveas(gca,[options.cwd,[methods_name_list{i},'(sv)']],'jpg');
     saveas(gca,[options.cwd,[methods_name_list{i},'(sv)']],'fig');

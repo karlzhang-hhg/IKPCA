@@ -1,4 +1,4 @@
-function scatter_label2d(Z,title_text,dd,tag,psize,color)
+function scatter_label2d(Z,title_text,dd,tag,psize,color,mark)
 % Plot scatter plots and label each data (coded with color which varied in 2-dimension)
 % Input:
 % Z: matrix of input data points with rows as points (points are
@@ -8,6 +8,7 @@ function scatter_label2d(Z,title_text,dd,tag,psize,color)
 % tag: A tag to decide whether indices of data points should be marked
 % besides those data points (0: no indices; 1: indices)
 % color: color map for each data points (rows of Z)
+% mark: the index for data points to be marked
 
 N = size(Z,1); %Number of data points
 
@@ -21,5 +22,7 @@ a = (1:N)'; b = num2str(a); c = cellstr(b); %Labels
 if tag == 1
     text(Z(:,1)+dd*range_Z(1),Z(:,2)+dd*range_Z(2),c); %Label those data points    
 end
+mark_cell = cellstr(num2str(mark));
+text(Z(mark,1)+dd*range_Z(1),Z(mark,2)+dd*range_Z(2),mark_cell); %Label those data points
 title(title_text);
 end

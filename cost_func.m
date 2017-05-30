@@ -17,9 +17,14 @@ p = length(Z)/N;
 f = 0;
 Z_m = reshape(Z,[p,N])'; % Reshape the row vector Z into a N-by-p matrix
 K = Gaussian_Kernel(Z_m,sigma);
-for i = 1:n
-    f=f+norm(B(i,:)-A(i,:)*K);
-end
+% for i = 1:n
+%     f=f+norm(B(i,:)-A(i,:)*K);
+% end
+
+% Previously, the norm is sqrt root of the sum square
+% That is not what we want in 20160907 weekly report
+% The following it correct
+f = sum(sum((B-A*K).^2));
 
 if nargout > 1 % graident required
     g = zeros(p*N,1);

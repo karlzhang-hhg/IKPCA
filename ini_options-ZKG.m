@@ -21,7 +21,7 @@ function [options] = ini_options()
 % options.max_iter: maximum iteration number
 %%
 % Parameters for generating data
-    options.N = 1000; %Number of data points 
+    options.N = 500; %Number of data points 
     options.l = 20;
     options.p = 2; %Dimension of variation sources
     options.sigma_data = 5;
@@ -30,11 +30,11 @@ function [options] = ini_options()
     
 % Parameters for running the algorithm    
     options.sigma_alg = 2;
-    options.max_iter = 10;
+    options.max_iter = 80;
     options.esp = 1e-6; %Tolerance for convergence
 
 % Parameters for storing and plotting data
-    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20170523-RKHS-Implementation-Alternating-Alg/figures/';
+    options.cwd = '/Users/kungangzhang/Documents/OneDrive/Northwestern/Study/Courses/Independent Study/20170328-More-heuristic/figures/';
     options.pct = 0.99; %the percentage of threshold eigen-values
     %options.pct_pca = 0.99; %the percentage of threshold eigen-values in PCA
     options.pc1 = 1; %The index of the first component to be plotted
@@ -46,10 +46,8 @@ function [options] = ini_options()
     options.psize = 10;
     
 % Parameters for the one-step algorithm
-    options.lam_A = 6e3;
-    options.lam_a = 0;
-    options.lam_Z = 0;
-    options.lam_AK = 0.8e3;
+    options.lam_A = 1e-2;
+    options.lam_a = 1e-2;
     
 % Parameters during iteration in new model
     options.delta = 1e-4;
@@ -75,8 +73,4 @@ function [options] = ini_options()
 % Parameters for finding alpha of the factor for projection error of col(X)
 % on row(K)
     options.wei = 1;
-    
-    
-% Parameter of hole in variation sources
-    options.d = 0.3;
 end

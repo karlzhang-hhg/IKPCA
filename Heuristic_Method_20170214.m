@@ -1,6 +1,19 @@
-function [Z,X,color,PC_X,V,D,PC_std_ind,eig_values_std] = genGaussianDat(options)
-%% Generate Gaussian profiles and plot the variation sources and PCA (2d and 3d)
-rng(options.rngn); %Set seed for random generator
+%% Heuristic algorithm based on the optimization results from the weekly report on 20170117
+%1. Move the current K towards XX^T, with a small step. 
+%2. Re-solve the variation-source problem of Z using inverse Gaussian and MDS.
+
+%% Generate Data
+clear();
+% Initialize parameters
+options = ini_options();
+
+% File prefix
+pr = 1;
+name = '2-';
+
+% Specify the seed of random number generator
+rngn = 2;
+rng(rngn); %Set seed for random generator
 
 % Generate random (p-dimensional) z's which are sources of variation
 N = options.N; %Number of data points 
@@ -24,6 +37,10 @@ elseif scat_func_tag == 2
     color = [0.7*ones(N,1),Z(:,1)/max(Z(:,1)),0.3*ones(N,1)];
     a = int16(Z(:,2)*100); b = num2str(a); c = cellstr(b); %Labels
     scatter_label2d_func(Z,title_text1,dd,tag,psize,color,c) %Plot scatter plot of Z
+end
+if pr == 1
+    saveas(gca,[options.cwd,[name,'Z_true']],'jpg');
+    saveas(gca,[options.cwd,[name,'Z_true']],'fig');
 end
 % Generated data set 1
 % %Generate n-D embeded data at higher-dimensional space
@@ -62,18 +79,16 @@ X_std = (X-repmat(mean(X,1),N,1))/diag(std_X);
 %PCA on standardized observations
 title_text3 = 'Standardized version: Principle components of';
 [PC_std_ind,eig_values_std] = scatter_PCA_3d(X_std,pc1,pc2,pc3,pct,title_text3,color_3D,psize,az,el);
-
-%PCA of Kernel of true Z
-title_text4 = 'Kernel: Principle components of';
-K_true = Gaussian_Kernel(Z,options.sigma_alg);
-
+if pr == 1
+    saveas(gca,[options.cwd,[name,'3d_PCA']],'jpg');
+    saveas(gca,[options.cwd,[name,'3d_PCA']],'fig');
+end
 
 %%Inverse KPCA
 %In svd (singular value decomposition, the singular values are sorted
 %in non-increasing order.
 [V,D,U] = svd(X_std/sqrt(N-1),'econ');
-[V,D,U] = svd(X_std,'econ');
-%Principle components of standardized X (PCA scores)
+%Principle components of X (PCA scores)
 PC_X = V*D(:,1:length(PC_std_ind));
 %The standardized observations doesn't have full column rank, so we
 %should pick out those columns of V that correspond to non-zero
@@ -81,7 +96,41 @@ PC_X = V*D(:,1:length(PC_std_ind));
 
 %Plot 2-D scattering plot of first two coordinates obtained by PCA
 title_text_PCA = 'Principle components of observations X';
-scatter_label2d_func(PC_X(:,[1,2]),title_text_PCA,dd,tag,psize,color)
-% saveas(gca,[options.cwd,['2-3']],'jpg');
-% saveas(gca,[options.cwd,['2-3']],'fig');
+scatter_label2d_func(PC_X(:,[1,2])/diag(sqrt(var(PC_X(:,[1,2]))))*diag(sqrt(var(Z(:,[1,2])))),title_text_PCA,dd,tag,psize,color)
+if pr == 1
+    saveas(gca,[options.cwd,[name,'2d_PCA']],'jpg');
+    saveas(gca,[options.cwd,[name,'2d_PCA']],'fig');
 end
+
+%% 
+max_iter = options.max_iter;
+
+Z0 = PC_X(:,[1,2]);
+
+%Z_ini =  PC_X(:,[1,2])/diag(sqrt(var(PC_X(:,[1,2]))))*diag(sqrt(var(Z(:,[1,2]))));
+Z_ini =PC_X(:,[1,2]);
+K_est = Gaussian_Kernel(Z_ini,options.sigma_alg);
+for i=1:max_iter
+    %IGaussian_Kernel_old means not using conjugate symmetry of inverted
+    %elements of K
+    [Z_est,lambda_est] = IGaussian_Kernel_old(K_est,options.sigma_alg,options.p);
+    %[Z_est,lambda_est] = IGaussian_Kernel_iter(K_est,options.sigma_alg,options.pct_pca);
+    %'Symmetric K' means when calculating the inverted elements of K, I
+    %didn't use conjugate symmetry, while 'asymmetric K' means I use conjugate symmetry 
+    title_text3 = ['(iter=',num2str(i),') Estimated variation source based on heuristic alg-20170214',10,'(\sigma_{data}=',...
+        num2str(options.sigma_data),', \sigma_{alg}=',num2str(options.sigma_alg),', \alpha_{1}=',num2str(options.alp1),...
+        ', \alpha_{2}=',num2str(options.alp2),') with symmetric K'];
+    scatter_label2d_func(Z_est,title_text3,options.dd,0,options.psize,color)
+    if pr == 1
+        saveas(gca,[options.cwd,[name,num2str(i-1)]],'jpg');
+        saveas(gca,[options.cwd,[name,num2str(i-1)]],'fig');
+        close(gcf);
+    end
+    
+    %K_est = Gaussian_Kernel(Z_est(:,[1,2])/diag(sqrt(var(Z_est(:,[1,2]))))*diag(sqrt(var(Z(:,[1,2])))),options.sigma_alg);
+    K_est = Gaussian_Kernel(Z_est(:,[1,2])/diag(sqrt(var(Z_est(:,[1,2])))),options.sigma_alg);%Just let the variance of each Z_est to be unit
+    K_est = K_est + options.alp1*(options.alp2*(X_std*X_std')-K_est);
+    i
+end
+
+

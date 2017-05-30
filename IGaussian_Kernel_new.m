@@ -1,4 +1,4 @@
-function [Z,lambda] = IGaussian_Kernel_old(K,sigma_kernel,p)
+function [Z,lambda] = IGaussian_Kernel_new(K,sigma_kernel,p,pct,dim)
 % Inverse Gaussian Kernel
 % Input:
 % K: output Gaussian Kernel based on input data points
@@ -15,7 +15,7 @@ for i = 1:N
     for j = i:N
         h_K(i,j) = -2*sigma_kernel^2*log(K(i,j));
         if i~=j
-            h_K(j,i) = conj(h_K(i,j));
+            h_K(j,i) = (h_K(i,j));
         end
     end
 end
@@ -30,8 +30,10 @@ h_K_new = (h_K_new + h_K_new')/2;
 %In eig funciton, the eigen-values are sorted in non-decreasing order
 [eig_vectors,eig_values] = eig(h_K_new);
 %display(diag(eig_values));
-Z = (I(N:-1:N-(p-1),:)*sqrt(eig_values)*eig_vectors')';
 lambda = diag(eig_values);
-th_ind = sing_th_ind(sqrt(lambda(N:-1:1)),0.99);
-lambda = lambda(N:-1:N-(p-1));
+th_ind = sing_th_ind(sqrt(lambda(N:-1:1)),pct)
+num = max(p,min(th_ind,dim));
+lambda = lambda(N:-1:N-(num-1));
+Z = (I(N:-1:N-(num-1),:)*sqrt(eig_values)*eig_vectors')';
+
 end
